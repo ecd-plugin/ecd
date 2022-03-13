@@ -61,12 +61,7 @@ public class ProcyonDecompiler extends BaseDecompiler {
 
 		final String classPathStr = new File(workingDir, className).getAbsolutePath();
 
-		boolean includeLineNumbers = false;
-		boolean stretchLines = false;
-		if (ClassUtil.isDebug()) {
-			includeLineNumbers = true;
-			stretchLines = true;
-		}
+		final boolean includeLineNumbers = ClassUtil.isDebug();
 
 		DecompilationOptions decompilationOptions = new DecompilationOptions();
 
@@ -110,16 +105,10 @@ public class ProcyonDecompiler extends BaseDecompiler {
 
 			List<LineNumberPosition> lineNumberPositions = results.getLineNumberPositions();
 
-			if (includeLineNumbers || stretchLines) {
+			if (includeLineNumbers) {
 				EnumSet<LineNumberOption> lineNumberOptions = EnumSet.noneOf(LineNumberOption.class);
 
-				if (includeLineNumbers) {
-					lineNumberOptions.add(LineNumberFormatter.LineNumberOption.LEADING_COMMENTS);
-				}
-
-				if (stretchLines) {
-					lineNumberOptions.add(LineNumberFormatter.LineNumberOption.STRETCHED);
-				}
+				lineNumberOptions.add(LineNumberFormatter.LineNumberOption.LEADING_COMMENTS);
 
 				LineNumberFormatter lineFormatter = new LineNumberFormatter(classFile, lineNumberPositions,
 						lineNumberOptions);
