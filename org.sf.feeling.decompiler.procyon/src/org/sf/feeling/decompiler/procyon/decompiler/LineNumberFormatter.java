@@ -22,6 +22,8 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
+import org.sf.feeling.decompiler.util.Logger;
+
 import com.strobel.decompiler.languages.LineNumberPosition;
 
 /**
@@ -36,9 +38,9 @@ import com.strobel.decompiler.languages.LineNumberPosition;
  * </ul>
  */
 public class LineNumberFormatter {
-	private final List<LineNumberPosition> _positions;
-	private final File _file;
-	private final EnumSet<LineNumberOption> _options;
+	private final List<LineNumberPosition> lineNumberPositions;
+	private final File file;
+	private final EnumSet<LineNumberOption> options;
 
 	public enum LineNumberOption {
 		LEADING_COMMENTS, STRETCHED,
@@ -55,9 +57,46 @@ public class LineNumberFormatter {
 	 */
 	public LineNumberFormatter(File file, List<LineNumberPosition> lineNumberPositions,
 			EnumSet<LineNumberOption> options) {
-		_file = file;
-		_positions = lineNumberPositions;
-		_options = (options == null ? EnumSet.noneOf(LineNumberOption.class) : options);
+		this.file = file;
+		// this.lineNumberPositions = filterLineNumberPositions(lineNumberPositions);
+		this.lineNumberPositions = lineNumberPositions;
+		this.options = (options == null ? EnumSet.noneOf(LineNumberOption.class) : options);
+	}
+
+	/**
+	 * If the compiler inlines methods the original line numbers my be non-linear,
+	 * which confuses the LineNumberFormatter.
+	 * 
+	 * We use the simple approach to remove all previous elements to make all
+	 * elements ascending regarding the original line number.
+	 * 
+	 * @param positions
+	 * @return
+	 * @see https://github.com/ecd-plugin/ecd/issues/109
+	 */
+	private List<LineNumberPosition> filterLineNumberPositions(List<LineNumberPosition> positions) {
+		List<LineNumberPosition> resultList = new ArrayList<>(positions.size());
+		int currentLineNumber = -1;
+		// Make the original line numbers all ascending -> remove non-matching entries
+		for (LineNumberPosition p : positions) {
+			int next = p.getOriginalLine();
+			if (currentLineNumber <= next) {
+				currentLineNumber = next;
+				resultList.add(p);
+				continue;
+			}
+			while (resultList.size() > 0) {
+				int resultIndex = resultList.size() - 1;
+				LineNumberPosition lastPos = resultList.get(resultIndex);
+				if (lastPos.getOriginalLine() <= next) {
+					break;
+				}
+				Logger.debug("LinenumberPositions are not ordered ascending, removing non-matching " + lastPos, null);
+				resultList.remove(resultIndex);
+			}
+			resultList.add(p);
+		}
+		return resultList;
 	}
 
 	/**
@@ -76,7 +115,7 @@ public class LineNumberFormatter {
 	}
 
 	/**
-	 * Processes {@link #_file}, breaking apart any lines on which multiple
+	 * Processes {@link #file}, breaking apart any lines on which multiple
 	 * line-number markers appear in different columns.
 	 * 
 	 * @return the list of broken lines
@@ -86,9 +125,9 @@ public class LineNumberFormatter {
 		int lineOffset = 0;
 		List<String> brokenLines = new ArrayList<>();
 
-		try (BufferedReader r = new BufferedReader(new FileReader(_file))) {
-			for (int posIndex = 0; posIndex < _positions.size(); posIndex++) {
-				LineNumberPosition pos = _positions.get(posIndex);
+		try (BufferedReader r = new BufferedReader(new FileReader(file))) {
+			for (int posIndex = 0; posIndex < lineNumberPositions.size(); posIndex++) {
+				LineNumberPosition pos = lineNumberPositions.get(posIndex);
 				o_LineBrokenPositions.add(new LineNumberPosition(pos.getOriginalLine(),
 						pos.getEmittedLine() + lineOffset, pos.getEmittedColumn()));
 
@@ -108,7 +147,8 @@ public class LineNumberFormatter {
 				int prevPartLen = 0;
 				char[] indent = {};
 				do {
-					nextPos = (posIndex < _positions.size() - 1) ? _positions.get(posIndex + 1) : null;
+					nextPos = (posIndex < lineNumberPositions.size() - 1) ? lineNumberPositions.get(posIndex + 1)
+							: null;
 					if (nextPos != null && nextPos.getEmittedLine() == pos.getEmittedLine()
 							&& nextPos.getOriginalLine() > pos.getOriginalLine()) {
 						// Two different source line numbers on the same emitted line!
@@ -144,7 +184,7 @@ public class LineNumberFormatter {
 
 	private void emitFormatted(List<String> brokenLines, List<LineNumberPosition> lineBrokenPositions, Writer writer)
 			throws IOException {
-		File tempFile = new File(_file.getAbsolutePath() + ".fixed");
+		File tempFile = new File(file.getAbsolutePath() + ".fixed");
 		int globalOffset = 0;
 		int numLinesRead = 0;
 		Iterator<String> lines = brokenLines.iterator();
@@ -153,12 +193,12 @@ public class LineNumberFormatter {
 		try (LineNumberPrintWriter w = new LineNumberPrintWriter(maxLineNo, writer)) {
 
 			// Suppress all line numbers if we weren't asked to show them.
-			if (!_options.contains(LineNumberOption.LEADING_COMMENTS)) {
+			if (!options.contains(LineNumberOption.LEADING_COMMENTS)) {
 				w.suppressLineNumbers();
 			}
 
 			// Suppress stretching if we weren't asked to do it.
-			boolean doStretching = (_options.contains(LineNumberOption.STRETCHED));
+			boolean doStretching = (options.contains(LineNumberOption.STRETCHED));
 
 			for (LineNumberPosition pos : lineBrokenPositions) {
 				int nextTarget = pos.getOriginalLine();
@@ -237,8 +277,8 @@ public class LineNumberFormatter {
 
 		// Delete the original file and rename the formatted temp file over the
 		// original.
-		_file.delete();
-		tempFile.renameTo(_file);
+		file.delete();
+		tempFile.renameTo(file);
 	}
 
 }
