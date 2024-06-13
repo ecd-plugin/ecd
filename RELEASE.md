@@ -2,11 +2,16 @@
 
     update-version.sh <new version number>
 
-# Creating an unsigned release
+# Creating release files
+
+## Unsigned release
 
     mvn clean package 
 
 This command will create the release repository ZIP file in `update_site/target/com.github.ecd-plugin.update-<version>.zip`
+
+* Rename created zip to `com.github.ecd-plugin.update-<version>.unsigned.zip`
+* Move zip file to different folder (next build process will delete it otherwise)
 
 # Creating a release with signed JAR files
 
@@ -16,9 +21,17 @@ This command will create the release repository ZIP file in `update_site/target/
 
 This command will create the release repository ZIP file in `update_site/target/com.github.ecd-plugin.update-<version>.zip`
 
+* Move zip file to different folder (next build process will delete it otherwise)
+
 # Update site
 
 1. Delete existing plugins and features directory in update site project. 
 2. Copy `update_site/target/category.xml` to update site project
-3. Extract the content of `com.github.ecd-plugin.update-<version>.zip` to the update site project directory.
+3. Extract the content of `com.github.ecd-plugin.update-<version>.zip` (signed version) to the update site project directory.
 4. Update `site.xml` file
+
+# Github release
+
+1. Create Release with new Git tag. The tag is ECD `<version>.<release-date>` - example: v3.5.0.20240613
+2. Copy new changelog enries of the version from `Readme.md` to release description
+3. Attach the two generated files `com.github.ecd-plugin.update-<version>.zip` `com.github.ecd-plugin.update-<version>.unsigned.zip`
