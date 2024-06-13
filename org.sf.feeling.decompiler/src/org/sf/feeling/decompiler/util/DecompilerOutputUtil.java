@@ -833,8 +833,6 @@ public class DecompilerOutputUtil {
 			}
 		}
 		jslLevel = maxFieldValue;
-		AST.getJLSLatest();
-
 		return jslLevel;
 	}
 }
