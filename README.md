@@ -74,8 +74,9 @@ Due to a signature bug in all Eclipse versions up to (including) Eclipse 2021-03
 This affects the release version published on https://ecd-plugin.github.io/update/ and also the version installable via Eclipse Marketplace as it uses this update site.
 
 ## Changelog
-* Version ?.?.? (not yet released)
-  * Use AST to remove block comments    
+* Version 3.5.1
+  * Use AST to remove block comments
+  * For newer Eclipse versions use methods to get the latest supported Java version (required for Eclipse 2024-06) 
 
 * Version 3.5.0
   * Moved FernFlower into own plugin/feature
