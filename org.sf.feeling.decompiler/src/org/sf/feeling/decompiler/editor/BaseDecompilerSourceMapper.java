@@ -158,7 +158,7 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper 
 
 		classLocation = ""; //$NON-NLS-1$
 
-		usedDecompiler = decompile(null, type, exceptions, root, className);
+		usedDecompiler = decompile(type, exceptions, root, className);
 
 		if (noDecompiledSourceCodeAvailable(usedDecompiler)) {
 			if (usedDecompiler == null) {
@@ -260,9 +260,12 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper 
 		return false;
 	}
 
-	private IDecompiler decompile(IDecompiler decompiler, IType type, Collection<Exception> exceptions,
-			IPackageFragmentRoot root, String className) {
-		IDecompiler result = decompiler;
+	private IDecompiler decompile(IType type, Collection<Exception> exceptions, IPackageFragmentRoot root,
+			String className) {
+
+		originalDecompiler.clearExceptions();
+
+		IDecompiler result = null;
 
 		String pkg = type.getPackageFragment().getElementName().replace('.', '/');
 
@@ -277,13 +280,11 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper 
 				String archivePath = getArchivePath(root);
 				classLocation += archivePath;
 
-				if (result == null) {
-					try (InputStream in = new ByteArrayInputStream(type.getClassFile().getBytes())) {
-						result = ClassUtil.checkAvailableDecompiler(originalDecompiler, in);
-					} catch (JavaModelException e) {
-						Logger.error(e.toString());
-						result = originalDecompiler;
-					}
+				try (InputStream in = new ByteArrayInputStream(type.getClassFile().getBytes())) {
+					result = ClassUtil.checkAvailableDecompiler(originalDecompiler, in);
+				} catch (JavaModelException e) {
+					Logger.error(e.toString());
+					result = originalDecompiler;
 				}
 				result.decompileFromArchive(archivePath, pkg, className);
 			} else {
@@ -306,9 +307,7 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper 
 								+ className;
 					}
 
-					if (result == null) {
-						result = ClassUtil.checkAvailableDecompiler(originalDecompiler, new File(classLocation));
-					}
+					result = ClassUtil.checkAvailableDecompiler(originalDecompiler, new File(classLocation));
 					result.decompile(rootLocation, pkg, className);
 				} catch (JavaModelException e) {
 					exceptions.add(e);
@@ -325,7 +324,7 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper 
 	}
 
 	@Override
-	public String decompile(String decompilerType, File file) {
+	public String decompileFile(String decompilerType, File file) {
 		IPreferenceStore prefs = JavaDecompilerPlugin.getDefault().getPreferenceStore();
 
 		Boolean displayNumber = null;
@@ -379,7 +378,6 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper 
 		} else {
 			source.append(code);
 		}
-
 		return source.toString();
 	}
 

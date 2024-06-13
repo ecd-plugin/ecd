@@ -53,6 +53,8 @@ public interface IDecompiler {
 	 */
 	List<Exception> getExceptions();
 
+	void clearExceptions();
+
 	/**
 	 * @return decompilation log specific to physical decompiler
 	 */

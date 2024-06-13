@@ -41,6 +41,7 @@ public class ClassUtil {
 
 		boolean debug = isDebug();
 		IDecompiler defaultDecompiler = getDebugDecompiler(classLevel, debug);
+		defaultDecompiler.clearExceptions();
 
 		if (decompiler.supportLevel(classLevel)) {
 			if (debug) {
@@ -128,7 +129,9 @@ public class ClassUtil {
 			if (!defaultDecompiler.isPresent()) {
 				return null;
 			}
-			return defaultDecompiler.get().getDecompiler();
+			IDecompiler decompiler = defaultDecompiler.get().getDecompiler();
+			decompiler.clearExceptions();
+			return decompiler;
 		}
 		return null;
 	}

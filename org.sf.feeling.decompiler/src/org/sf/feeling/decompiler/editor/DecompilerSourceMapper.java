@@ -174,5 +174,5 @@ public abstract class DecompilerSourceMapper extends SourceMapper {
 		return elt;
 	}
 
-	public abstract String decompile(String decompilerType, File file);
+	public abstract String decompileFile(String decompilerType, File file);
 }

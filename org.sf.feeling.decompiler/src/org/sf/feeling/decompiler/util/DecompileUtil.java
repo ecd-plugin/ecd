@@ -47,11 +47,10 @@ public class DecompileUtil {
 		return origSrc;
 	}
 
-	public static String decompiler(FileStoreEditorInput input, String decompilerType) {
+	public static String decompileInput(FileStoreEditorInput input, String decompilerType) {
 		DecompilerSourceMapper sourceMapper = SourceMapperFactory.getSourceMapper(decompilerType);
 		File file = new File(input.getURI());
-		return sourceMapper.decompile(decompilerType, file);
-
+		return sourceMapper.decompileFile(decompilerType, file);
 	}
 
 	public static String getPackageName(String source) {

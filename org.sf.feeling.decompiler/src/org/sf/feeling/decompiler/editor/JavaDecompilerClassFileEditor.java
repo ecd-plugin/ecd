@@ -324,7 +324,7 @@ public class JavaDecompilerClassFileEditor extends ClassFileEditor {
 			FileStoreEditorInput storeInput = (FileStoreEditorInput) input;
 			IPreferenceStore prefs = JavaDecompilerPlugin.getDefault().getPreferenceStore();
 			String decompilerType = prefs.getString(JavaDecompilerConstants.DECOMPILER_TYPE);
-			String source = DecompileUtil.decompiler(storeInput, decompilerType);
+			String source = DecompileUtil.decompileInput(storeInput, decompilerType);
 
 			if (source != null) {
 				String packageName = DecompileUtil.getPackageName(source);

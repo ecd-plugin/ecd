@@ -16,4 +16,8 @@ public abstract class BaseDecompiler implements IDecompiler {
 		return exceptions;
 	}
 
+	@Override
+	public void clearExceptions() {
+		exceptions.clear();
+	}
 }
