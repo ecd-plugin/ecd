@@ -60,7 +60,7 @@ public final class CommentUtil {
 				}
 			}
 		}
-		edits.addChildren(textEdits.toArray(TextEdit[]::new));
+		edits.addChildren(textEdits.toArray(new TextEdit[textEdits.size()]));
 		try {
 			edits.apply(document);
 		} catch (MalformedTreeException | BadLocationException e) {
