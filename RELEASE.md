@@ -19,5 +19,6 @@ This command will create the release repository ZIP file in `update_site/target/
 # Update site
 
 1. Delete existing plugins and features directory in update site project. 
-2. Extract the content of `com.github.ecd-plugin.update-<version>.zip` to the update site project directory.
-3. Update `site.xml` file
+2. Copy `update_site/target/category.xml` to update site project
+3. Extract the content of `com.github.ecd-plugin.update-<version>.zip` to the update site project directory.
+4. Update `site.xml` file
