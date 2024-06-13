@@ -2,7 +2,7 @@
 <feature
       id="org.sf.feeling.decompiler"
       label="%featureName"
-      version="3.5.0"
+      version="3.5.1"
       provider-name="%providerName"
       plugin="org.sf.feeling.decompiler">
 
@@ -50,7 +50,7 @@
          id="org.sf.feeling.decompiler"
          download-size="0"
          install-size="0"
-         version="3.5.0"
+         version="3.5.1"
          unpack="false"/>
 
 </feature>

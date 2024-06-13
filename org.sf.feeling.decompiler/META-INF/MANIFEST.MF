@@ -31,7 +31,7 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.14.0",
  org.eclipse.equinox.p2.metadata;resolution:=optional,
  org.eclipse.help.base
 Bundle-Vendor: ECD Project Team
-Bundle-Version: 3.5.0
+Bundle-Version: 3.5.1
 Bundle-ManifestVersion: 2
 Bundle-Activator: org.sf.feeling.decompiler.JavaDecompilerPlugin
 Bundle-SymbolicName: org.sf.feeling.decompiler;singleton:=true

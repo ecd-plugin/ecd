@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Enhanced Class Decompiler FernFlower Extension
 Bundle-SymbolicName: org.sf.feeling.decompiler.fernflower;singleton:=true
-Bundle-Version: 3.5.0
+Bundle-Version: 3.5.1
 Bundle-Activator: org.sf.feeling.decompiler.fernflower.FernFlowerDecompilerPlugin
 Require-Bundle: org.eclipse.core.runtime,
  org.sf.feeling.decompiler;bundle-version="3.2.2",
