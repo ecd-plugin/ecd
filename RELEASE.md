@@ -35,3 +35,8 @@ This command will create the release repository ZIP file in `update_site/target/
 1. Create Release with new Git tag. The tag is ECD `<version>.<release-date>` - example: v3.5.0.20240613
 2. Copy new changelog enries of the version from `Readme.md` to release description
 3. Attach the two generated files `com.github.ecd-plugin.update-<version>.zip` `com.github.ecd-plugin.update-<version>.unsigned.zip`
+
+# Eclipse Marketplace
+
+Update the latest version number and the supported Eclipse versions and update the features list if features has been added/removed.
+https://marketplace.eclipse.org/content/enhanced-class-decompiler/edit
