@@ -148,7 +148,7 @@ public abstract class DecompilerSourceMapper extends SourceMapper {
 
 	/**
 	 * Finds the deepest <code>IJavaElement</code> in the hierarchy of
-	 * <code>elt</elt>'s children (including <code>elt</code> itself) which has a
+	 * <code>elt</code>'s children (including <code>elt</code> itself) which has a
 	 * source range that encloses <code>position</code> according to
 	 * <code>mapper</code>.
 	 * 
