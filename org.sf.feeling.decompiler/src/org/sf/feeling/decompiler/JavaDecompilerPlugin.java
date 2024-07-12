@@ -75,15 +75,30 @@ public class JavaDecompilerPlugin extends AbstractUIPlugin implements IPropertyC
 	}
 
 	public static void logError(Throwable t, String message) {
-		JavaDecompilerPlugin.getDefault().getLog().log(new Status(IStatus.ERROR, JavaDecompilerConstants.PLUGIN_ID, 0, message, t));
+		JavaDecompilerPlugin.getDefault().getLog()
+				.log(new Status(IStatus.ERROR, JavaDecompilerConstants.PLUGIN_ID, 0, message, t));
+	}
+
+	public static void logWarn(Throwable t, String message) {
+		JavaDecompilerPlugin.getDefault().getLog()
+				.log(new Status(IStatus.WARNING, JavaDecompilerConstants.PLUGIN_ID, 0, message, t));
 	}
 
 	public static void logInfo(String message) {
-		JavaDecompilerPlugin.getDefault().getLog().log(new Status(IStatus.INFO, JavaDecompilerConstants.PLUGIN_ID, 0, message, null));
+		JavaDecompilerPlugin.getDefault().getLog()
+				.log(new Status(IStatus.INFO, JavaDecompilerConstants.PLUGIN_ID, 0, message, null));
 	}
 
+	/**
+	 * 
+	 * @param severity severity constant see {@link IStatus#INFO}
+	 *                 {@link IStatus#WARNING} {@link IStatus#ERROR}
+	 * @param t
+	 * @param message
+	 */
 	public static void log(int severity, Throwable t, String message) {
-		JavaDecompilerPlugin.getDefault().getLog().log(new Status(severity, JavaDecompilerConstants.PLUGIN_ID, 0, message, t));
+		JavaDecompilerPlugin.getDefault().getLog()
+				.log(new Status(severity, JavaDecompilerConstants.PLUGIN_ID, 0, message, t));
 	}
 
 	public static ImageDescriptor getImageDescriptor(String path) {
@@ -130,7 +145,8 @@ public class JavaDecompilerPlugin extends AbstractUIPlugin implements IPropertyC
 		store.setDefault(JavaDecompilerConstants.CLASS_FILE_ATTR_SHOW_VARIABLE_TABLE, false);
 		store.setDefault(JavaDecompilerConstants.CLASS_FILE_ATTR_SHOW_EXCEPTION_TABLE, false);
 		store.setDefault(JavaDecompilerConstants.CLASS_FILE_ATTR_SHOW_MAXS, false);
-		store.setDefault(JavaDecompilerConstants.BRANCH_TARGET_ADDRESS_RENDERING, JavaDecompilerConstants.BRANCH_TARGET_ADDRESS_RELATIVE);
+		store.setDefault(JavaDecompilerConstants.BRANCH_TARGET_ADDRESS_RENDERING,
+				JavaDecompilerConstants.BRANCH_TARGET_ADDRESS_RELATIVE);
 		store.setDefault(JavaDecompilerConstants.CLASS_FILE_ATTR_RENDER_TRYCATCH_BLOCKS, true);
 		store.setDefault(JavaDecompilerConstants.CLASS_FILE_ATTR_SHOW_SOURCE_LINE_NUMBERS, true);
 		store.setDefault(JavaDecompilerConstants.CLASS_FILE_ATTR_SHOW_MAXS, false);

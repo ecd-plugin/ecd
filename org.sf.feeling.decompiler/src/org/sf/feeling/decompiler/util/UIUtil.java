@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
@@ -92,18 +93,18 @@ public class UIUtil {
 	}
 
 	public static JavaDecompilerClassFileEditor getActiveDecompilerEditor() {
-		final JavaDecompilerClassFileEditor[] editors = new JavaDecompilerClassFileEditor[1];
+		final AtomicReference<JavaDecompilerClassFileEditor> editors = new AtomicReference<>();
 		Display.getDefault().syncExec(new Runnable() {
 
 			@Override
 			public void run() {
 				IWorkbenchPart editor = getActiveEditor(true);
 				if (editor instanceof JavaDecompilerClassFileEditor) {
-					editors[0] = (JavaDecompilerClassFileEditor) editor;
+					editors.set((JavaDecompilerClassFileEditor) editor);
 				}
 			}
 		});
-		return editors[0];
+		return editors.get();
 	}
 
 	public static List getActiveSelection() {
@@ -116,38 +117,33 @@ public class UIUtil {
 	}
 
 	public static String getActivePerspectiveId() {
-		final String[] ids = new String[1];
+		final AtomicReference<String> ids = new AtomicReference<>();
 		Display.getDefault().syncExec(new Runnable() {
 
 			@Override
 			public void run() {
 				IWorkbench wb = PlatformUI.getWorkbench();
 				if (wb == null) {
-					ids[0] = null;
 					return;
 				}
 
 				IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 				if (win == null) {
-					ids[0] = null;
 					return;
 				}
 				IWorkbenchPage page = win.getActivePage();
 				if (page == null) {
-					ids[0] = null;
 					return;
 				}
 
 				IPerspectiveDescriptor perspective = page.getPerspective();
 				if (perspective == null) {
-					ids[0] = null;
 					return;
 				}
-				ids[0] = perspective.getId();
-
+				ids.set(perspective.getId());
 			}
 		});
-		return ids[0];
+		return ids.get();
 	}
 
 	public static boolean isDebug() {
@@ -231,8 +227,7 @@ public class UIUtil {
 		IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();
 
 		if (windows != null) {
-			for (int i = 0; i < windows.length; i++) {
-				IWorkbenchWindow window = windows[i];
+			for (IWorkbenchWindow window : windows) {
 				for (IWorkbenchPage pg : window.getPages()) {
 					if (pg == null) {
 						continue;
@@ -260,8 +255,9 @@ public class UIUtil {
 			return selectedJars;
 		}
 
-		if (selectedJars.size() > 1)
+		if (selectedJars.size() > 1) {
 			return null;
+		}
 
 		final List selectedPackages = getSelectedElements(window.getSelectionService(), IPackageFragment.class);
 		final List selectedClasses = getSelectedElements(window.getSelectionService(), IClassFile.class);
@@ -278,7 +274,8 @@ public class UIUtil {
 		try {
 			IWorkbenchPart view = getActiveEditor(true);
 			if (view != null) {
-				if (view.getSite().getId().equals("org.eclipse.ui.navigator.ProjectExplorer")) //$NON-NLS-1$
+				String id = view.getSite().getId();
+				if (id.equals("org.eclipse.ui.navigator.ProjectExplorer")) //$NON-NLS-1$
 				{
 					CommonNavigator explorer = (CommonNavigator) view;
 					Field field = CommonNavigator.class.getDeclaredField("commonManager"); //$NON-NLS-1$
@@ -294,10 +291,12 @@ public class UIUtil {
 							isFlat = model.getBooleanProperty(Values.IS_LAYOUT_FLAT);
 						}
 					}
-				} else if (view.getSite().getId().equals("org.eclipse.jdt.ui.PackageExplorer")) //$NON-NLS-1$
+				} else if (id.equals("org.eclipse.jdt.ui.PackageExplorer")) //$NON-NLS-1$
 				{
 					PackageExplorerPart explorer = (PackageExplorerPart) view;
 					isFlat = explorer.isFlatLayout();
+				} else {
+					JavaDecompilerPlugin.logWarn(null, "isPackageFlat: unsupported view: " + id);
 				}
 			}
 		} catch (Exception e) {
@@ -317,8 +316,15 @@ public class UIUtil {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceRoot root = workspace.getRoot();
 		IResource resource = root.findMember(path);
-		if (resource != null) {
-			return resource.getLocation().toOSString();
+		if (resource == null) {
+			JavaDecompilerPlugin.logWarn(null, "Failed to find member of path " + path);
+		} else {
+			IPath location = resource.getLocation();
+			if (location == null) {
+				JavaDecompilerPlugin.logWarn(null, "Failed to get location of path " + resource);
+			} else {
+				return location.toOSString();
+			}
 		}
 		return null;
 	}
