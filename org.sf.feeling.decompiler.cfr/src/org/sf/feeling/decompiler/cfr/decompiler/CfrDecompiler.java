@@ -177,7 +177,7 @@ public class CfrDecompiler extends BaseDecompiler {
 
 	@Override
 	public boolean supportDebugLevel(int level) {
-		return false; // CFR does not seem to have an option to create code that matche sthe original
+		return false; // CFR does not seem to have an option to create code that matches the original
 						// line numbers
 	}
 

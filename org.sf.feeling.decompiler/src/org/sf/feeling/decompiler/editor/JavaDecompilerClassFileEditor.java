@@ -280,7 +280,7 @@ public class JavaDecompilerClassFileEditor extends ClassFileEditor {
 	}
 
 	/**
-	 * Sets edditor input only if buffer was actually opened.
+	 * Sets editor input only if buffer was actually opened.
 	 * 
 	 * @param force if <code>true</code> initialize no matter what
 	 */
