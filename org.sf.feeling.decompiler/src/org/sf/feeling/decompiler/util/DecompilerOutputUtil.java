@@ -31,6 +31,7 @@ import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.sf.feeling.decompiler.editor.DecompilerType;
 
 public class DecompilerOutputUtil {
 
@@ -342,7 +343,7 @@ public class DecompilerOutputUtil {
 		return number;
 	}
 
-	private String generageEmptyString(int length) {
+	private String generateEmptyString(int length) {
 		char[] chs = new char[length];
 		for (int i = 0; i < chs.length; i++) {
 			chs[i] = ' ';
@@ -375,6 +376,12 @@ public class DecompilerOutputUtil {
 
 	public static int parseJavaLineNumber(String decompilerType, String line) {
 		String regex = CommentUtil.LINE_NUMBER_COMMENT;
+		if (DecompilerType.isFernFlowerBased(decompilerType)) {
+			regex = "//\\s+\\d+"; //$NON-NLS-1$
+			if (line.matches("\\s*}//[0-9 ]+\\s*")) {
+				return -1; // line number on closing bracket cannot be known
+			}
+		}
 		Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 		Matcher matcher = pattern.matcher(line.trim());
 		if (matcher.find()) {
@@ -400,31 +407,34 @@ public class DecompilerOutputUtil {
 		return -1;
 	}
 
-	private String removeJavaLineNumber(String line, boolean generageEmptyString, int leftTrimSpace) {
+	private String removeJavaLineNumber(String line, boolean generateEmptyString, int leftTrimSpace) {
 		String regex = CommentUtil.LINE_NUMBER_COMMENT;
-//		if (DecompilerType.FernFlower.equals(decompilerType)) {
-//			regex = "//\\s+\\d+(\\s*\\d*)*"; //$NON-NLS-1$
-//		}
+		boolean fernFlowerBased = DecompilerType.isFernFlowerBased(decompilerType);
+		if (fernFlowerBased) {
+			regex = "//\\s+\\d+(\\s*\\d*)*"; //$NON-NLS-1$
+		}
 		Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 		Matcher matcher = pattern.matcher(line.trim());
 
 		if (matcher.find()) {
 			line = line.replace(matcher.group(), ""); //$NON-NLS-1$
-			if (generageEmptyString) {
-				line = generageEmptyString(matcher.group().length()) + line;
+			if (!fernFlowerBased && generateEmptyString) {
+				line = generateEmptyString(matcher.group().length()) + line;
 			}
 		}
-		regex = "/\\*\\s+\\*/"; //$NON-NLS-1$
-		pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-		matcher = pattern.matcher(line);
+		if (!fernFlowerBased) {
+			regex = "/\\*\\s+\\*/"; //$NON-NLS-1$
+			pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+			matcher = pattern.matcher(line);
 
-		if (matcher.find()) {
-			line = line.replace(matcher.group(), ""); //$NON-NLS-1$
-			if (generageEmptyString) {
-				line = generageEmptyString(matcher.group().length()) + line;
+			if (matcher.find()) {
+				line = line.replace(matcher.group(), ""); //$NON-NLS-1$
+				if (generateEmptyString) {
+					line = generateEmptyString(matcher.group().length()) + line;
+				}
 			}
 		}
-		if (leftTrimSpace > 0 && line.startsWith(generageEmptyString(leftTrimSpace))) {
+		if (leftTrimSpace > 0 && line.startsWith(generateEmptyString(leftTrimSpace))) {
 			line = line.substring(leftTrimSpace);
 		}
 		return line;
