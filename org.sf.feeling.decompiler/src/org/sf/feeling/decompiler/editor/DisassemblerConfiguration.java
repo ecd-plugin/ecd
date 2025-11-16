@@ -45,6 +45,7 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.sf.feeling.decompiler.util.ReflectionUtils;
 
 import com.drgarbage.asm.render.intf.IFieldSection;
 import com.drgarbage.asm.render.intf.IInstructionLine;
@@ -191,7 +192,11 @@ public class DisassemblerConfiguration extends TextSourceViewerConfiguration {
 		// JavaStringDoubleClickSelector(getConfiguredDocumentPartitioning(sourceViewer));
 		if (fJavaDoubleClickSelector == null) {
 			fJavaDoubleClickSelector = new JavaDoubleClickSelector();
-			fJavaDoubleClickSelector.setSourceVersion(fPreferenceStore.getString(JavaCore.COMPILER_SOURCE));
+			String sourceVersion = fPreferenceStore.getString(JavaCore.COMPILER_SOURCE);
+			// JavaDoubleClickSelector.setSourceVersion(String) is only available on Eclipse
+			// versions prior to Eclipse 2025-06
+			ReflectionUtils.invokeMethod(JavaDoubleClickSelector.class, "setSourceVersion",
+					new Class[] { String.class }, new Object[] { sourceVersion });
 		}
 		return fJavaDoubleClickSelector;
 	}
