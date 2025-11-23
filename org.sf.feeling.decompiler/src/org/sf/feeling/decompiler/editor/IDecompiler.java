@@ -67,6 +67,17 @@ public interface IDecompiler {
 
 	String getDecompilerType();
 
+	/**
+	 * Get the way the decompiler uses for printing source code line numbers in the
+	 * decompiled source code. Required for post-formatting the source code
+	 * according to the printed line numbers to make the source code suitable for
+	 * debugging.
+	 * 
+	 * @return line number output type or <code>null</code> if reformatting is not
+	 *         needed or supported
+	 */
+	LineNumberOutputType getLineNumberOutputType();
+
 	String removeComment(String source);
 
 	boolean supportDebugLevel(int level);

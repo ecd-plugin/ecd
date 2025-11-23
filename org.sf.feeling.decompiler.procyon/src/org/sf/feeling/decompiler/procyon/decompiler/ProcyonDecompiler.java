@@ -22,6 +22,7 @@ import org.sf.feeling.decompiler.JavaDecompilerConstants;
 import org.sf.feeling.decompiler.JavaDecompilerPlugin;
 import org.sf.feeling.decompiler.editor.BaseDecompiler;
 import org.sf.feeling.decompiler.editor.IDecompiler;
+import org.sf.feeling.decompiler.editor.LineNumberOutputType;
 import org.sf.feeling.decompiler.procyon.ProcyonDecompilerPlugin;
 import org.sf.feeling.decompiler.procyon.decompiler.LineNumberFormatter.LineNumberOption;
 import org.sf.feeling.decompiler.util.ClassUtil;
@@ -221,6 +222,14 @@ public class ProcyonDecompiler extends BaseDecompiler {
 	@Override
 	public String getDecompilerVersion() {
 		return ProcyonDecompilerPlugin.decompilerVersion;
+	}
+
+	@Override
+	public LineNumberOutputType getLineNumberOutputType() {
+		// Procyon generates line number comments at the beginning of the line but only
+		// for those lines source line information is present. The other lines are just
+		// indented by spaces.
+		return LineNumberOutputType.BLOCK_COMMENT_BEGIN_OF_LINE;
 	}
 
 }

@@ -25,6 +25,7 @@ import org.sf.feeling.decompiler.JavaDecompilerConstants;
 import org.sf.feeling.decompiler.JavaDecompilerPlugin;
 import org.sf.feeling.decompiler.editor.BaseDecompiler;
 import org.sf.feeling.decompiler.editor.IDecompiler;
+import org.sf.feeling.decompiler.editor.LineNumberOutputType;
 import org.sf.feeling.decompiler.util.ClassUtil;
 import org.sf.feeling.decompiler.util.CommentUtil;
 import org.sf.feeling.decompiler.util.FileUtil;
@@ -199,6 +200,11 @@ public class VineflowerDecompiler extends BaseDecompiler {
 	@Override
 	public boolean supportDebugLevel(int level) {
 		return true;
+	}
+
+	@Override
+	public LineNumberOutputType getLineNumberOutputType() {
+		return LineNumberOutputType.SINGLE_LINE_COMMENT_END_OF_LINE;
 	}
 
 	@Override

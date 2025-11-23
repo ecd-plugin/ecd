@@ -20,4 +20,10 @@ public abstract class BaseDecompiler implements IDecompiler {
 	public void clearExceptions() {
 		exceptions.clear();
 	}
+
+	@Override
+	public LineNumberOutputType getLineNumberOutputType() {
+		return null; // not supported or not required
+	}
+
 }

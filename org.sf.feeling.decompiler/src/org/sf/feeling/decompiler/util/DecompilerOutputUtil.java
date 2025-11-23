@@ -31,10 +31,14 @@ import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
+import org.sf.feeling.decompiler.editor.IDecompiler;
 
 public class DecompilerOutputUtil {
 
 	public static final String NO_LINE_NUMBER = "// Warning: No line numbers available in class file"; //$NON-NLS-1$
+
+	public final static String line_separator = System.getProperty("line.separator", //$NON-NLS-1$
+			"\r\n"); //$NON-NLS-1$
 
 	/**
 	 * Input string
@@ -56,16 +60,18 @@ public class DecompilerOutputUtil {
 	 */
 	private final List<JavaSrcLine> javaSrcLines = new ArrayList<>();
 
-	public final static String line_separator = System.getProperty("line.separator", //$NON-NLS-1$
-			"\r\n"); //$NON-NLS-1$
-
-	private String decompilerType;
+	private final IDecompiler decompiler;
 
 	private class InputLine {
 
-		String line;
+		final String line;
 		int outputLineNum = -1;
 		int calculatedNumLineJavaSrc = -1;
+
+		public InputLine(String line) {
+			super();
+			this.line = line;
+		}
 
 		@Override
 		public String toString() {
@@ -75,7 +81,7 @@ public class DecompilerOutputUtil {
 
 	private class JavaSrcLine {
 
-		List<Integer> inputLines = new ArrayList<>();
+		private final List<Integer> inputLines = new ArrayList<>();
 
 		@Override
 		public String toString() {
@@ -83,9 +89,9 @@ public class DecompilerOutputUtil {
 		}
 	}
 
-	public DecompilerOutputUtil(String decompilerType, String input) {
+	public DecompilerOutputUtil(IDecompiler decompiler, String input) {
 		this.input = input + line_separator;
-		this.decompilerType = decompilerType;
+		this.decompiler = decompiler;
 	}
 
 	public String realign() {
@@ -94,6 +100,10 @@ public class DecompilerOutputUtil {
 			return null;
 		}
 		if (input.isEmpty()) {
+			return input;
+		}
+
+		if (decompiler.getLineNumberOutputType() == null) {
 			return input;
 		}
 
@@ -122,7 +132,7 @@ public class DecompilerOutputUtil {
 			}
 		}
 
-		// Iterate over types (ignorning enums and annotations)
+		// Iterate over types (ignoring enums and annotations)
 		int firstTypeLine = Integer.MAX_VALUE;
 		int lastTypeLine = Integer.MIN_VALUE;
 		for (int i = 0; i < types.size(); i++) {
@@ -196,32 +206,31 @@ public class DecompilerOutputUtil {
 	public String toString() {
 		String line;
 		int numLine;
-		StringBuffer realignOutput = new StringBuffer();
-
 		int lineNumberWidth = String.valueOf(javaSrcLines.size()).length();
 
 		boolean generateEmptyString = true;
 		int leftTrimSpace = 0;
 
+		// Search for empty line number comment blocks
 		Pattern pattern = Pattern.compile("/\\*\\s+\\*/", //$NON-NLS-1$
 				Pattern.CASE_INSENSITIVE);
 		Matcher matcher = pattern.matcher(input);
 		if (matcher.find()) {
 			generateEmptyString = false;
 
-			pattern = Pattern.compile("([ ]+)import", //$NON-NLS-1$
+			Pattern importPattern = Pattern.compile("([ ]+)import", //$NON-NLS-1$
 					Pattern.CASE_INSENSITIVE);
-			matcher = pattern.matcher(input);
-			if (matcher.find()) {
-				leftTrimSpace = matcher.group().replace("import", "") //$NON-NLS-1$ //$NON-NLS-2$
+			Matcher importMatcher = importPattern.matcher(input);
+			if (importMatcher.find()) {
+				leftTrimSpace = importMatcher.group().replace("import", "") //$NON-NLS-1$ //$NON-NLS-2$
 						.length();
 			}
 		} else {
-			pattern = Pattern.compile("([ ]+)import", //$NON-NLS-1$
+			Pattern importPattern = Pattern.compile("([ ]+)import", //$NON-NLS-1$
 					Pattern.CASE_INSENSITIVE);
-			matcher = pattern.matcher(input);
-			if (matcher.find()) {
-				leftTrimSpace = matcher.group().replace("import", "") //$NON-NLS-1$ //$NON-NLS-2$
+			Matcher importMatcher = importPattern.matcher(input);
+			if (importMatcher.find()) {
+				leftTrimSpace = importMatcher.group().replace("import", "") //$NON-NLS-1$ //$NON-NLS-2$
 						.length();
 				generateEmptyString = true;
 			}
@@ -236,6 +245,7 @@ public class DecompilerOutputUtil {
 			}
 		}
 
+		StringBuffer realignOutput = new StringBuffer(input.length());
 		for (int i = 1; i < javaSrcLines.size(); i++) {
 			JavaSrcLine javaSrcLine = initJavaSrcListItem(i);
 
@@ -274,9 +284,9 @@ public class DecompilerOutputUtil {
 				for (int j = 0; j < javaSrcLine.inputLines.size(); j++) {
 					numLine = javaSrcLine.inputLines.get(j);
 					line = inputLines.get(numLine).line;
-					line = removeJavaLineNumber(line.replace("\r\n", "\n").replace("\n", ""), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-							j == 0 && generateEmptyString, leftTrimSpace);
-					realignOutput.append(line);
+					line = line.replace("\r\n", "\n").replace("\n", ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+					String cleanLine = removeJavaLineNumber(line, j == 0 && generateEmptyString, leftTrimSpace);
+					realignOutput.append(cleanLine);
 				}
 			} else if (i > 1) {
 				realignOutput.append("/* " //$NON-NLS-1$
@@ -342,7 +352,7 @@ public class DecompilerOutputUtil {
 		return number;
 	}
 
-	private String generageEmptyString(int length) {
+	private String generateEmptyString(int length) {
 		char[] chs = new char[length];
 		for (int i = 0; i < chs.length; i++) {
 			chs[i] = ' ';
@@ -364,67 +374,39 @@ public class DecompilerOutputUtil {
 			}
 
 			// Build OutputLine object
-			InputLine outputLine = new InputLine();
-			outputLine.line = input.substring(lineStart, lineEnd);
-			inputLines.add(outputLine);
+			inputLines.add(new InputLine(input.substring(lineStart, lineEnd)));
 
 			// Next line start is current line end
 			lineStart = lineEnd;
 		}
 	}
 
-	public static int parseJavaLineNumber(String decompilerType, String line) {
-		String regex = CommentUtil.LINE_NUMBER_COMMENT;
-		Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-		Matcher matcher = pattern.matcher(line.trim());
+	public int parseJavaLineNumber(String line) {
+		Pattern pattern = decompiler.getLineNumberOutputType().getPattern();
+		Matcher matcher = pattern.matcher(line);
 		if (matcher.find()) {
-			return Integer.parseInt(matcher.group().replaceAll("[^0-9]", "")); //$NON-NLS-1$ //$NON-NLS-2$
+			String lineNumbersStr = matcher.group(2).trim();
+			if (!lineNumbersStr.isEmpty()) {
+				String[] lineNumbersArr = lineNumbersStr.split("\\D+"); // split by non-digits
+				return Integer.parseInt(lineNumbersArr[0]);
+			}
 		}
 		return -1;
 	}
 
-	public static int parseJavaLineNumber(String line) {
-		String regex = CommentUtil.LINE_NUMBER_COMMENT;
-		Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-		Matcher matcher = pattern.matcher(line.trim());
-		if (matcher.find()) {
-			return Integer.parseInt(matcher.group().replaceAll("[^0-9]", "")); //$NON-NLS-1$ //$NON-NLS-2$
-		} else {
-			regex = "//\\s+\\d+"; //$NON-NLS-1$
-		}
-		pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-		matcher = pattern.matcher(line.trim());
-		if (matcher.find()) {
-			return Integer.parseInt(matcher.group().replaceAll("[^0-9]", "")); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-		return -1;
-	}
-
-	private String removeJavaLineNumber(String line, boolean generageEmptyString, int leftTrimSpace) {
-		String regex = CommentUtil.LINE_NUMBER_COMMENT;
-//		if (DecompilerType.FernFlower.equals(decompilerType)) {
-//			regex = "//\\s+\\d+(\\s*\\d*)*"; //$NON-NLS-1$
-//		}
-		Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+	private String removeJavaLineNumber(String line, boolean generateEmptyString, int leftTrimSpace) {
+		Pattern pattern = decompiler.getLineNumberOutputType().getPattern();
 		Matcher matcher = pattern.matcher(line.trim());
 
 		if (matcher.find()) {
-			line = line.replace(matcher.group(), ""); //$NON-NLS-1$
-			if (generageEmptyString) {
-				line = generageEmptyString(matcher.group().length()) + line;
+			String lineNumberComment = matcher.group(1);
+			line = line.replace(lineNumberComment, ""); //$NON-NLS-1$
+			if (generateEmptyString) {
+				line = generateEmptyString(lineNumberComment.length()) + line;
 			}
 		}
-		regex = "/\\*\\s+\\*/"; //$NON-NLS-1$
-		pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-		matcher = pattern.matcher(line);
 
-		if (matcher.find()) {
-			line = line.replace(matcher.group(), ""); //$NON-NLS-1$
-			if (generageEmptyString) {
-				line = generageEmptyString(matcher.group().length()) + line;
-			}
-		}
-		if (leftTrimSpace > 0 && line.startsWith(generageEmptyString(leftTrimSpace))) {
+		if (leftTrimSpace > 0 && line.startsWith(generateEmptyString(leftTrimSpace))) {
 			line = line.substring(leftTrimSpace);
 		}
 		return line;
@@ -723,7 +705,7 @@ public class DecompilerOutputUtil {
 
 			// Parse the commented line number if available
 			InputLine inputLine = inputLines.get(inputNumLine);
-			inputLine.outputLineNum = parseJavaLineNumber(decompilerType, inputLine.line);
+			inputLine.outputLineNum = parseJavaLineNumber(inputLine.line);
 
 			if (inputLine.outputLineNum > 1) {
 

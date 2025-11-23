@@ -15,6 +15,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.sf.feeling.decompiler.JavaDecompilerPlugin;
 import org.sf.feeling.decompiler.editor.BaseDecompiler;
 import org.sf.feeling.decompiler.editor.IDecompiler;
+import org.sf.feeling.decompiler.editor.LineNumberOutputType;
 import org.sf.feeling.decompiler.jd.JDCoreDecompilerPlugin;
 import org.sf.feeling.decompiler.util.ClassUtil;
 import org.sf.feeling.decompiler.util.FileUtil;
@@ -167,4 +168,10 @@ public class JDCoreDecompiler extends BaseDecompiler {
 	public String getDecompilerVersion() {
 		return JDCoreDecompilerPlugin.decompilerVersion;
 	}
+
+	@Override
+	public LineNumberOutputType getLineNumberOutputType() {
+		return LineNumberOutputType.BLOCK_COMMENT_BEGIN_OF_LINE;
+	}
+
 }

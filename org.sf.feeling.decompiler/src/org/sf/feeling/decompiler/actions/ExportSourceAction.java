@@ -212,11 +212,10 @@ public class ExportSourceAction extends Action {
 						+ System.currentTimeMillis());
 
 		Map<IJavaElement, List<IJavaElement>> classesMap = new HashMap();
-		for (int i = 0; i < children.length; i++) {
+		for (IJavaElement child : children) {
 			if (monitor.isCanceled()) {
 				return;
 			}
-			IJavaElement child = children[i];
 			try {
 				collectClasses(child, classesMap, monitor);
 			} catch (JavaModelException e) {
@@ -231,11 +230,10 @@ public class ExportSourceAction extends Action {
 
 		IPackageFragment[] pkgs = classesMap.keySet().toArray(new IPackageFragment[0]);
 		int step = 880000 / pkgs.length;
-		for (int i = 0; i < pkgs.length; i++) {
+		for (IPackageFragment pkg : pkgs) {
 			if (monitor.isCanceled()) {
 				return;
 			}
-			IPackageFragment pkg = pkgs[i];
 			List<IJavaElement> clazzList = classesMap.get(pkg);
 			if (clazzList.isEmpty()) {
 				monitor.worked(step);
@@ -243,11 +241,10 @@ public class ExportSourceAction extends Action {
 			}
 			int total = 0;
 			int classStep = step / clazzList.size();
-			for (int j = 0; j < clazzList.size(); j++) {
+			for (IJavaElement clazz : clazzList) {
 				if (monitor.isCanceled()) {
 					return;
 				}
-				IJavaElement clazz = clazzList.get(j);
 				if (clazz instanceof IClassFile && clazz.getParent() instanceof IPackageFragment) {
 					String className = pkg.getElementName();
 					if (pkg.getElementName().length() > 0) {
@@ -345,7 +342,8 @@ public class ExportSourceAction extends Action {
 				}
 			}
 		} else if (element instanceof IClassFile) {
-			IPackageFragment pkg = (IPackageFragment) ((IClassFile) element).getParent();
+			IClassFile classFile = (IClassFile) element;
+			IPackageFragment pkg = (IPackageFragment) classFile.getParent();
 			if (!classesMap.containsKey(pkg)) {
 				monitor.subTask(pkg.getElementName());
 				List<IJavaElement> list = new ArrayList<>();

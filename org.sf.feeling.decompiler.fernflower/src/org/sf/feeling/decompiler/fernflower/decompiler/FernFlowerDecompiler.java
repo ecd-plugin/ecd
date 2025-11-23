@@ -24,10 +24,11 @@ import org.sf.feeling.decompiler.JavaDecompilerConstants;
 import org.sf.feeling.decompiler.JavaDecompilerPlugin;
 import org.sf.feeling.decompiler.editor.BaseDecompiler;
 import org.sf.feeling.decompiler.editor.IDecompiler;
-import org.sf.feeling.decompiler.util.ClassUtil;
+import org.sf.feeling.decompiler.editor.LineNumberOutputType;
 import org.sf.feeling.decompiler.util.CommentUtil;
 import org.sf.feeling.decompiler.util.FileUtil;
 import org.sf.feeling.decompiler.util.JarClassExtractor;
+import org.sf.feeling.decompiler.util.UIUtil;
 import org.sf.feeling.decompiler.util.UnicodeUtil;
 
 public class FernFlowerDecompiler extends BaseDecompiler {
@@ -72,7 +73,8 @@ public class FernFlowerDecompiler extends BaseDecompiler {
 		mapOptions.put(IFernflowerPreferences.DECOMPILE_ENUM, "1"); //$NON-NLS-1$
 		mapOptions.put(IFernflowerPreferences.LOG_LEVEL, IFernflowerLogger.Severity.ERROR.name());
 		mapOptions.put(IFernflowerPreferences.ASCII_STRING_CHARACTERS, "1"); //$NON-NLS-1$
-		if (ClassUtil.isDebug()) {
+
+		if (UIUtil.isDebug()) {
 			mapOptions.put(IFernflowerPreferences.DUMP_ORIGINAL_LINES, "1"); //$NON-NLS-1$
 			mapOptions.put(IFernflowerPreferences.BYTECODE_SOURCE_MAPPING, "1"); //$NON-NLS-1$
 		}
@@ -202,6 +204,11 @@ public class FernFlowerDecompiler extends BaseDecompiler {
 	@Override
 	public boolean supportDebugLevel(int level) {
 		return true;
+	}
+
+	@Override
+	public LineNumberOutputType getLineNumberOutputType() {
+		return LineNumberOutputType.SINGLE_LINE_COMMENT_END_OF_LINE;
 	}
 
 	@Override

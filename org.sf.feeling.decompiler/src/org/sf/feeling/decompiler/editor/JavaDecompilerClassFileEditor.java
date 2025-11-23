@@ -266,10 +266,19 @@ public class JavaDecompilerClassFileEditor extends ClassFileEditor {
 		return isDebug(source) != ClassUtil.isDebug();
 	}
 
+	/**
+	 * Checks if the decompiled source code contains line numbers as comment.
+	 * 
+	 * @param source
+	 * @return
+	 */
 	public static boolean isDebug(String source) {
 		if (source == null) {
 			return false;
 		}
+
+		// Scan for line number comments at the beginning of the line in this
+		// format: /* 146 */
 		Pattern pattern = Pattern.compile("/\\*\\s*\\d+\\s*\\*/"); //$NON-NLS-1$
 		Matcher matcher = pattern.matcher(source);
 		return matcher.find() || source.indexOf(DecompilerOutputUtil.NO_LINE_NUMBER) != -1;
