@@ -35,6 +35,7 @@ import org.eclipse.jdt.internal.ui.javaeditor.IClassFileEditorInput;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.sf.feeling.decompiler.JavaDecompilerConstants;
 import org.sf.feeling.decompiler.JavaDecompilerPlugin;
+import org.sf.feeling.decompiler.postprocessing.CharacterEscaper;
 import org.sf.feeling.decompiler.postprocessing.LineReformatter;
 import org.sf.feeling.decompiler.util.ClassUtil;
 import org.sf.feeling.decompiler.util.DecompileUtil;
@@ -348,6 +349,8 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper 
 		}
 
 		String code = currentDecompiler.getSource();
+
+		code = CharacterEscaper.process(code);
 
 		boolean showReport = prefs.getBoolean(JavaDecompilerConstants.PREF_DISPLAY_METADATA);
 		if (!showReport) {
