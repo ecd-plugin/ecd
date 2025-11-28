@@ -333,6 +333,7 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper 
 		}
 
 		IDecompiler currentDecompiler = ClassUtil.checkAvailableDecompiler(originalDecompiler, file);
+		usedDecompiler = currentDecompiler;
 
 		currentDecompiler.decompile(file.getParentFile().getAbsolutePath(), "", //$NON-NLS-1$
 				file.getName());
