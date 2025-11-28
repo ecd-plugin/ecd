@@ -2,7 +2,7 @@ package org.sf.feeling.decompiler.editor;
 
 import java.util.regex.Pattern;
 
-import org.sf.feeling.decompiler.util.DecompilerOutputUtil;
+import org.sf.feeling.decompiler.postprocessing.LineReformatter;
 
 /**
  * Several decompiler don't support generating decompiled code that is formatted
@@ -15,7 +15,7 @@ import org.sf.feeling.decompiler.util.DecompilerOutputUtil;
  * There are multiple styles decompiler use for including the source code line
  * numbers into the decompiled source code. This enum class lists all supported
  * line number styles so that the source code reformatter in
- * {@link DecompilerOutputUtil} can use this information to find and extract the
+ * {@link LineReformatter} can use this information to find and extract the
  * line numbers.
  */
 public enum LineNumberOutputType {

@@ -6,20 +6,14 @@
  * https://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
 
-package org.sf.feeling.decompiler.util;
+package org.sf.feeling.decompiler.postprocessing;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
@@ -32,8 +26,16 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.sf.feeling.decompiler.editor.IDecompiler;
+import org.sf.feeling.decompiler.util.EclipseUtils;
 
-public class DecompilerOutputUtil {
+/**
+ * Allows to reformat decompiled source code in a way that the source code line
+ * numbers are considered and the resulting code can be used for debugging.
+ * 
+ * The line numbers are extracted from code comments inserted by the
+ * decompilers.
+ */
+public class LineReformatter {
 
 	public static final String NO_LINE_NUMBER = "// Warning: No line numbers available in class file"; //$NON-NLS-1$
 
@@ -62,7 +64,7 @@ public class DecompilerOutputUtil {
 
 	private final IDecompiler decompiler;
 
-	private class InputLine {
+	private static class InputLine {
 
 		final String line;
 		int outputLineNum = -1;
@@ -79,7 +81,7 @@ public class DecompilerOutputUtil {
 		}
 	}
 
-	private class JavaSrcLine {
+	private static class JavaSrcLine {
 
 		private final List<Integer> inputLines = new ArrayList<>();
 
@@ -89,7 +91,7 @@ public class DecompilerOutputUtil {
 		}
 	}
 
-	public DecompilerOutputUtil(IDecompiler decompiler, String input) {
+	public LineReformatter(IDecompiler decompiler, String input) {
 		this.input = input + line_separator;
 		this.decompiler = decompiler;
 	}
@@ -112,11 +114,11 @@ public class DecompilerOutputUtil {
 
 		// Parse source code into AST
 		javaSrcLines.add(null);
-		ASTParser parser = ASTParser.newParser(DecompilerOutputUtil.getMaxJSLLevel()); // AST.JLS3
+		ASTParser parser = ASTParser.newParser(EclipseUtils.getMaxJSLLevel()); // AST.JLS3
 		CompilerOptions option = new CompilerOptions();
 		Map<String, String> options = option.getMap();
-		options.put(CompilerOptions.OPTION_Compliance, DecompilerOutputUtil.getMaxDecompileLevel()); // $NON-NLS-1$
-		options.put(CompilerOptions.OPTION_Source, DecompilerOutputUtil.getMaxDecompileLevel()); // $NON-NLS-1$
+		options.put(CompilerOptions.OPTION_Compliance, EclipseUtils.getMaxDecompileLevel()); // $NON-NLS-1$
+		options.put(CompilerOptions.OPTION_Source, EclipseUtils.getMaxDecompileLevel()); // $NON-NLS-1$
 		parser.setCompilerOptions(options);
 
 		parser.setSource(input.toCharArray());
@@ -743,78 +745,4 @@ public class DecompilerOutputUtil {
 		}
 	}
 
-	private static String level = null;
-
-	/**
-	 * @return the maximum Java version supported by the current Eclipse JDT version
-	 */
-	public static String getMaxDecompileLevel() {
-		if (level != null) {
-			return level;
-		}
-
-		// replacement for newer Eclipse versions
-		// return JavaCore.latestSupportedJavaVersion();
-		Object obj = ReflectionUtils.invokeMethod(JavaCore.class, "latestSupportedJavaVersion");
-		if (obj != null) {
-			level = (String) obj;
-			return level;
-		}
-
-		// filter oot all versions that are not a simple integers e.g. "9" "10" ...
-		Pattern p = Pattern.compile("^\\d+$");
-		List<String> allVersions = new LinkedList<>(JavaCore.getAllVersions());
-		Iterator<String> it = allVersions.iterator();
-		while (it.hasNext()) {
-			String v = it.next();
-			if (!p.matcher(v).matches()) {
-				it.remove();
-			}
-		}
-		if (allVersions.isEmpty()) {
-			level = "1.8"; //$NON-NLS-1$
-			return level;
-		}
-
-		List<Integer> allVersionsInt = new ArrayList<>();
-		for (String v : allVersions) {
-			allVersionsInt.add(Integer.parseInt(v));
-		}
-		level = Integer.toString(Collections.max(allVersionsInt));
-		return level;
-	}
-
-	private static int jslLevel = -1;
-
-	public static int getMaxJSLLevel() {
-		if (jslLevel != -1) {
-			return jslLevel;
-		}
-
-		// replacement for newer Eclipse versions
-		// return AST.getJLSLatest();
-		Object obj = ReflectionUtils.invokeMethod(AST.class, "getJLSLatest");
-		if (obj != null) {
-			jslLevel = (Integer) obj;
-			return jslLevel;
-		}
-
-		Pattern p = Pattern.compile("^JLS\\d+$");
-		int maxFieldValue = 8; // Java 8 is supported by all Eclipse versions ECD targets
-		for (Field f : AST.class.getFields()) {
-			if (f.getType() != int.class || !p.matcher(f.getName()).matches()) {
-				continue;
-			}
-			try {
-				int value = f.getInt(AST.class);
-				if (value > maxFieldValue) {
-					maxFieldValue = value;
-				}
-			} catch (Exception e) {
-
-			}
-		}
-		jslLevel = maxFieldValue;
-		return jslLevel;
-	}
 }

@@ -34,11 +34,11 @@ public final class CommentUtil {
 	}
 
 	public static String clearComments(String input) {
-		ASTParser parser = ASTParser.newParser(DecompilerOutputUtil.getMaxJSLLevel()); // AST.JLS3
+		ASTParser parser = ASTParser.newParser(EclipseUtils.getMaxJSLLevel()); // AST.JLS3
 		CompilerOptions option = new CompilerOptions();
 		Map<String, String> options = option.getMap();
-		options.put(CompilerOptions.OPTION_Compliance, DecompilerOutputUtil.getMaxDecompileLevel()); // $NON-NLS-1$
-		options.put(CompilerOptions.OPTION_Source, DecompilerOutputUtil.getMaxDecompileLevel()); // $NON-NLS-1$
+		options.put(CompilerOptions.OPTION_Compliance, EclipseUtils.getMaxDecompileLevel()); // $NON-NLS-1$
+		options.put(CompilerOptions.OPTION_Source, EclipseUtils.getMaxDecompileLevel()); // $NON-NLS-1$
 		parser.setCompilerOptions(options);
 		parser.setSource(input.toCharArray());
 		CompilationUnit unit = (CompilationUnit) parser.createAST(null);

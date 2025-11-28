@@ -34,8 +34,8 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 import org.sf.feeling.decompiler.JavaDecompilerConstants;
 import org.sf.feeling.decompiler.JavaDecompilerPlugin;
-import org.sf.feeling.decompiler.util.DecompilerOutputUtil;
 import org.sf.feeling.decompiler.util.EclipseCompatibilityHelper;
+import org.sf.feeling.decompiler.util.EclipseUtils;
 import org.sf.feeling.decompiler.util.SourceMapperUtil;
 
 public abstract class DecompilerSourceMapper extends SourceMapper {
@@ -102,8 +102,8 @@ public abstract class DecompilerSourceMapper extends SourceMapper {
 		if (source != null && useFormatter) {
 			CompilerOptions option = new CompilerOptions();
 			Map<String, String> options = option.getMap();
-			options.put(CompilerOptions.OPTION_Compliance, DecompilerOutputUtil.getMaxDecompileLevel()); // $NON-NLS-1$
-			options.put(CompilerOptions.OPTION_Source, DecompilerOutputUtil.getMaxDecompileLevel()); // $NON-NLS-1$
+			options.put(CompilerOptions.OPTION_Compliance, EclipseUtils.getMaxDecompileLevel()); // $NON-NLS-1$
+			options.put(CompilerOptions.OPTION_Source, EclipseUtils.getMaxDecompileLevel()); // $NON-NLS-1$
 			CodeFormatter formatter = ToolFactory.createCodeFormatter(options);
 			TextEdit textEdit = formatter.format(CodeFormatter.K_COMPILATION_UNIT, source, 0, source.length(), 0, null);
 			if (textEdit != null) {

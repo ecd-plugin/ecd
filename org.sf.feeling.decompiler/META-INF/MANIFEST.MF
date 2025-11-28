@@ -42,6 +42,7 @@ Export-Package: org.objectweb.asm,
  org.sf.feeling.decompiler.editor,
  org.sf.feeling.decompiler.extension,
  org.sf.feeling.decompiler.i18n,
+ org.sf.feeling.decompiler.postprocessing,
  org.sf.feeling.decompiler.preferences,
  org.sf.feeling.decompiler.source.attach,
  org.sf.feeling.decompiler.util

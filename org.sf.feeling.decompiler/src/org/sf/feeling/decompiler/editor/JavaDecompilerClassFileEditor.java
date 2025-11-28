@@ -83,9 +83,9 @@ import org.eclipse.ui.texteditor.IncrementalFindAction;
 import org.sf.feeling.decompiler.JavaDecompilerConstants;
 import org.sf.feeling.decompiler.JavaDecompilerPlugin;
 import org.sf.feeling.decompiler.actions.DecompileActionGroup;
+import org.sf.feeling.decompiler.postprocessing.LineReformatter;
 import org.sf.feeling.decompiler.util.ClassUtil;
 import org.sf.feeling.decompiler.util.DecompileUtil;
-import org.sf.feeling.decompiler.util.DecompilerOutputUtil;
 import org.sf.feeling.decompiler.util.FileUtil;
 import org.sf.feeling.decompiler.util.Logger;
 import org.sf.feeling.decompiler.util.ReflectionUtils;
@@ -281,7 +281,7 @@ public class JavaDecompilerClassFileEditor extends ClassFileEditor {
 		// format: /* 146 */
 		Pattern pattern = Pattern.compile("/\\*\\s*\\d+\\s*\\*/"); //$NON-NLS-1$
 		Matcher matcher = pattern.matcher(source);
-		return matcher.find() || source.indexOf(DecompilerOutputUtil.NO_LINE_NUMBER) != -1;
+		return matcher.find() || source.indexOf(LineReformatter.NO_LINE_NUMBER) != -1;
 	}
 
 	public IBuffer getClassBuffer() {

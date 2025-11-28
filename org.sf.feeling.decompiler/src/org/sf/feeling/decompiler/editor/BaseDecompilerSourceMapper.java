@@ -35,9 +35,10 @@ import org.eclipse.jdt.internal.ui.javaeditor.IClassFileEditorInput;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.sf.feeling.decompiler.JavaDecompilerConstants;
 import org.sf.feeling.decompiler.JavaDecompilerPlugin;
+import org.sf.feeling.decompiler.postprocessing.LineReformatter;
 import org.sf.feeling.decompiler.util.ClassUtil;
 import org.sf.feeling.decompiler.util.DecompileUtil;
-import org.sf.feeling.decompiler.util.DecompilerOutputUtil;
+import org.sf.feeling.decompiler.util.EclipseUtils;
 import org.sf.feeling.decompiler.util.Logger;
 import org.sf.feeling.decompiler.util.ReflectionUtils;
 import org.sf.feeling.decompiler.util.SortMemberUtil;
@@ -51,8 +52,8 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper 
 	static {
 		CompilerOptions option = new CompilerOptions();
 		options = option.getMap();
-		options.put(CompilerOptions.OPTION_Compliance, DecompilerOutputUtil.getMaxDecompileLevel()); // $NON-NLS-1$
-		options.put(CompilerOptions.OPTION_Source, DecompilerOutputUtil.getMaxDecompileLevel()); // $NON-NLS-1$
+		options.put(CompilerOptions.OPTION_Compliance, EclipseUtils.getMaxDecompileLevel()); // $NON-NLS-1$
+		options.put(CompilerOptions.OPTION_Source, EclipseUtils.getMaxDecompileLevel()); // $NON-NLS-1$
 	}
 
 	protected IDecompiler originalDecompiler;
@@ -182,7 +183,7 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper 
 			if (showReport) {
 				code = usedDecompiler.removeComment(code);
 			}
-			DecompilerOutputUtil decompilerOutputUtil = new DecompilerOutputUtil(usedDecompiler, code);
+			LineReformatter decompilerOutputUtil = new LineReformatter(usedDecompiler, code);
 			code = decompilerOutputUtil.realign();
 		}
 
@@ -360,7 +361,7 @@ public abstract class BaseDecompilerSourceMapper extends DecompilerSourceMapper 
 			if (showReport) {
 				code = currentDecompiler.removeComment(code);
 			}
-			DecompilerOutputUtil decompilerOutputUtil = new DecompilerOutputUtil(currentDecompiler, code);
+			LineReformatter decompilerOutputUtil = new LineReformatter(currentDecompiler, code);
 			code = decompilerOutputUtil.realign();
 		}
 
