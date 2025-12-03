@@ -16,6 +16,7 @@
             name="%DecompilerView"
             icon="icons/decompiler.png"
             extensions="class"
+            default="true"
             class="org.sf.feeling.decompiler.editor.JavaDecompilerClassFileEditor"
             contributorClass="org.eclipse.jdt.internal.ui.javaeditor.ClassFileEditorActionContributor"
             id="org.sf.feeling.decompiler.ClassFileEditor"
@@ -353,5 +354,27 @@
    </extension>
    <extension point="org.eclipse.help.toc">
     <toc file="doc/toc.xml" primary="true" />
-  </extension>	 
+  </extension>
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <navigatorContent
+            activeByDefault="true"
+            contentProvider="org.sf.feeling.decompiler.JarContentProvider"
+            id="org.sf.feeling.decompiler.navigatorContent"
+            labelProvider="org.sf.feeling.decompiler.JarLabelProvider"
+            name="%NavigatorContent">
+         <triggerPoints>
+            <or>
+               <instanceof value="org.eclipse.core.resources.IFile" />
+               <instanceof value="org.sf.feeling.decompiler.JarContentProvider.JarNode" />
+            </or>
+         </triggerPoints>
+         <possibleChildren>
+            <or>
+               <instanceof value="org.sf.feeling.decompiler.JarContentProvider.JarNode" />
+               <instanceof value="org.eclipse.core.resources.IFile" />
+            </or>
+         </possibleChildren>
+      </navigatorContent>
+   </extension>
 </plugin>
