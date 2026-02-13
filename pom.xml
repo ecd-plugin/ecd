@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.ecd-plugin</groupId>
 	<artifactId>com.github.ecd-plugin.ecd</artifactId>
-	<version>3.5.1</version>
+	<version>3.5.2</version>
 	<packaging>pom</packaging>
 	<name>com.github.ecd-plugin.ecd</name>
 	<url>https://github.com/ecd-plugin/ecd</url>
