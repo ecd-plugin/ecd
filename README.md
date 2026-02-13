@@ -1,10 +1,10 @@
 # Enhanced Class Decompiler
-Enhanced Class Decompiler integrates **JD**, **FernFlower**, **Vineflower**, **CFR**, **Procyon** seamlessly with Eclipse and allows Java developers to **debug class files without source code directly**. It also integrates with the eclipse class editor, m2e plugin, supports **Javadoc**,  **reference search**, **library source attaching**, **byte code view** and the syntax of JDK8 **lambda** expression.
+Enhanced Class Decompiler integrates **JD**, **Fernflower**, **Vineflower**, **CFR**, **Procyon** seamlessly with Eclipse and allows Java developers to **debug class files without source code directly**. It also integrates with the eclipse class editor, m2e plugin, supports **Javadoc**,  **reference search**, **library source attaching**, **byte code view** and the syntax of JDK8 **lambda** expression.
 
 <p align="center"><img src="https://ecd-plugin.github.io/ecd/doc/o_debug_class.png"></p>
 
 ## Description
-Enhanced Class Decompiler is a plug-in for the Eclipse platform. It integrates JD, FernFlower, Vineflower, CFR, Procyon seamlessly with Eclipse, allows you to display all the Java sources during your debugging process, even if you do not have them all, and you can debug these class files without source code directly.
+Enhanced Class Decompiler is a plug-in for the Eclipse platform. It integrates JD, Fernflower, Vineflower, CFR, Procyon seamlessly with Eclipse, allows you to display all the Java sources during your debugging process, even if you do not have them all, and you can debug these class files without source code directly.
 
 ## Why is this plug-in "enhanced"?
 This is an ad-free fork of the Eclipse Decompiler Plugin. So we enhanced it by removing all code which might compromise your privacy or security (to the best of our knowledge).
@@ -74,12 +74,19 @@ Due to a signature bug in all Eclipse versions up to (including) Eclipse 2021-03
 This affects the release version published on https://ecd-plugin.github.io/update/ and also the version installable via Eclipse Marketplace as it uses this update site.
 
 ## Changelog
+* Version 3.5.2
+  * Reworked output formatter that uses the line number in comments from the decompiler to build source code with correct line numbers for debugging
+  * Do not set Fernflower as default decompiler if it's plugin is not installed
+  * Fix plugin.xml referencing nonexistent class `org.sf.feeling.decompiler.actions.DecompileWithFernflowerHandler`
+  * Remove unused `org.apache.commons.codec` feature dependency
+  * Fix NullPointerException in UIUtils.getPathLocation()
+
 * Version 3.5.1
   * Use AST to remove block comments
   * For newer Eclipse versions use methods to get the latest supported Java version (required for Eclipse 2024-06) 
 
 * Version 3.5.0
-  * Moved FernFlower into own plugin/feature
+  * Moved Fernflower into own plugin/feature
   * Quiltflower plugin and feature removed
   * Vineflower plugin and feature added (replaces Quiltflower)
   * Removed "Source" (source.attach) plugin and feature
