@@ -1,10 +1,10 @@
 # Enhanced Class Decompiler
-Enhanced Class Decompiler integrates **JD**, **Fernflower**, **Vineflower**, **CFR**, **Procyon** seamlessly with Eclipse and allows Java developers to **debug class files without source code directly**. It also integrates with the eclipse class editor, m2e plugin, supports **Javadoc**,  **reference search**, **library source attaching**, **byte code view** and the syntax of JDK8 **lambda** expression.
+Enhanced Class Decompiler integrates **JD**, **Fernflower**, **Vineflower**, **CFR**, **Procyon** seamlessly with Eclipse and allows Java developers to **debug class files without source code directly (except with [CFR](https://github.com/ecd-plugin/ecd/blob/786df9f5061d530c00ca7fd25d6408c51e1fe504/org.sf.feeling.decompiler.cfr/src/org/sf/feeling/decompiler/cfr/decompiler/CfrDecompiler.java#L180))**. It also integrates with the eclipse class editor, m2e plugin, supports **Javadoc**,  **reference search**, **byte code view** and the syntax of JDK8 **lambda** expression.
 
 <p align="center"><img src="https://ecd-plugin.github.io/ecd/doc/o_debug_class.png"></p>
 
 ## Description
-Enhanced Class Decompiler is a plug-in for the Eclipse platform. It integrates JD, Fernflower, Vineflower, CFR, Procyon seamlessly with Eclipse, allows you to display all the Java sources during your debugging process, even if you do not have them all, and you can debug these class files without source code directly.
+Enhanced Class Decompiler is a plug-in for the Eclipse platform. It integrates JD, Fernflower, Vineflower, CFR, Procyon seamlessly with Eclipse, allows you to display all the Java sources during your debugging process (except with [CFR](https://github.com/ecd-plugin/ecd/blob/786df9f5061d530c00ca7fd25d6408c51e1fe504/org.sf.feeling.decompiler.cfr/src/org/sf/feeling/decompiler/cfr/decompiler/CfrDecompiler.java#L180)), even if you do not have them all, and you can debug these class files without source code directly.
 
 ## Why is this plug-in "enhanced"?
 This is an ad-free fork of the Eclipse Decompiler Plugin. So we enhanced it by removing all code which might compromise your privacy or security (to the best of our knowledge).
