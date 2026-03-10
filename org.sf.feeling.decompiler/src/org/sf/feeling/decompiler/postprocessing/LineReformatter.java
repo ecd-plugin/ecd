@@ -34,6 +34,12 @@ import org.sf.feeling.decompiler.util.EclipseUtils;
  * 
  * The line numbers are extracted from code comments inserted by the
  * decompilers.
+ *
+ * Renamed from DecompilerOutputUtil
+ * Original authors:
+ * @author Alex Kosinsky (https://sourceforge.net/projects/realignmentjd)
+ * @author Martin Hare Robertson (https://github.com/mchr3k/jdeclipse-realign)
+ * @author Chen Chao (https://github.com/cpupk/ecd)
  */
 public class LineReformatter {
 
@@ -746,3 +752,4 @@ public class LineReformatter {
 	}
 
 }
+
